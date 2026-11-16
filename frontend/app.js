@@ -14,6 +14,10 @@ const universityInput = document.getElementById("universitySearch");
 const areaInput = document.getElementById("areaSearch");
 const typeSelect = document.getElementById("typeFilter");
 const sortSelect = document.getElementById("sortSelect");
+const minPriceInput = document.getElementById("minPrice");
+const maxPriceInput = document.getElementById("maxPrice");
+const amenitySelect = document.getElementById("amenityFilter");
+const resultCount = document.getElementById("resultCount");
 const emptyState = document.getElementById("emptyState");
 const activeFilters = document.getElementById("activeFilters");
 const dialog = document.getElementById("listingDialog");
@@ -36,7 +40,10 @@ function currentResults() {
   let results = listings.filter(item =>
     (!university || item.university.toLowerCase().includes(university)) &&
     (!area || item.area.toLowerCase().includes(area)) &&
-    (!type || item.type === type)
+    (!type || item.type === type) &&
+    (!minPriceInput.value || item.price >= Number(minPriceInput.value)) &&
+    (!maxPriceInput.value || item.price <= Number(maxPriceInput.value)) &&
+    (!amenitySelect.value || item.features.includes(amenitySelect.value))
   );
   if (sortSelect.value === "low") results.sort((a,b)=>a.price-b.price);
   if (sortSelect.value === "high") results.sort((a,b)=>b.price-a.price);
@@ -45,11 +52,15 @@ function currentResults() {
 function renderListings() {
   const results = currentResults();
   grid.innerHTML = results.map(cardTemplate).join("");
+  resultCount.textContent = `${results.length} ${results.length === 1 ? "space" : "spaces"} found`;
   emptyState.hidden = results.length > 0;
   activeFilters.innerHTML = [
     universityInput.value.trim() ? `<button class="filter-chip" data-clear="university">Campus: ${universityInput.value.trim()} ×</button>` : "",
     areaInput.value.trim() ? `<button class="filter-chip" data-clear="area">Area: ${areaInput.value.trim()} ×</button>` : "",
-    typeSelect.value ? `<button class="filter-chip" data-clear="type">${typeSelect.value} ×</button>` : ""
+    typeSelect.value ? `<button class="filter-chip" data-clear="type">${typeSelect.value} ×</button>` : "",
+    minPriceInput.value ? `<button class="filter-chip" data-clear="min">Min ₦${Number(minPriceInput.value).toLocaleString("en-NG")} ×</button>` : "",
+    maxPriceInput.value ? `<button class="filter-chip" data-clear="max">Max ₦${Number(maxPriceInput.value).toLocaleString("en-NG")} ×</button>` : "",
+    amenitySelect.value ? `<button class="filter-chip" data-clear="amenity">${amenitySelect.value} ×</button>` : ""
   ].join("");
 }
 function showToast(message) {
@@ -68,6 +79,9 @@ document.getElementById("searchBtn").addEventListener("click",()=>{renderListing
 [universityInput,areaInput].forEach(input=>input.addEventListener("keydown",event=>{if(event.key==="Enter"){renderListings();document.getElementById("listings").scrollIntoView({behavior:"smooth"});}}));
 typeSelect.addEventListener("change",renderListings);
 sortSelect.addEventListener("change",renderListings);
+[minPriceInput,maxPriceInput].forEach(input=>input.addEventListener("input",renderListings));
+amenitySelect.addEventListener("change",renderListings);
+document.getElementById("clearAllFilters").addEventListener("click",()=>{universityInput.value="";areaInput.value="";typeSelect.value="";minPriceInput.value="";maxPriceInput.value="";amenitySelect.value="";renderListings();});
 document.querySelectorAll(".category-card").forEach(button=>button.addEventListener("click",()=>{
   document.querySelectorAll(".category-card").forEach(card=>card.classList.remove("selected"));
   button.classList.add("selected");
@@ -81,8 +95,8 @@ grid.addEventListener("click",event=>{
   const card=event.target.closest(".listing-card");if(card)openListing(Number(card.dataset.id));
 });
 grid.addEventListener("keydown",event=>{if((event.key==="Enter"||event.key===" ")&&event.target.classList.contains("listing-card")){event.preventDefault();openListing(Number(event.target.dataset.id));}});
-activeFilters.addEventListener("click",event=>{const clear=event.target.closest("[data-clear]");if(!clear)return;if(clear.dataset.clear==="university")universityInput.value="";if(clear.dataset.clear==="area")areaInput.value="";if(clear.dataset.clear==="type")typeSelect.value="";renderListings();});
-document.getElementById("clearFilters").addEventListener("click",()=>{universityInput.value="";areaInput.value="";typeSelect.value="";renderListings();});
+activeFilters.addEventListener("click",event=>{const clear=event.target.closest("[data-clear]");if(!clear)return;if(clear.dataset.clear==="university")universityInput.value="";if(clear.dataset.clear==="area")areaInput.value="";if(clear.dataset.clear==="type")typeSelect.value="";if(clear.dataset.clear==="min")minPriceInput.value="";if(clear.dataset.clear==="max")maxPriceInput.value="";if(clear.dataset.clear==="amenity")amenitySelect.value="";renderListings();});
+document.getElementById("clearFilters").addEventListener("click",()=>{universityInput.value="";areaInput.value="";typeSelect.value="";minPriceInput.value="";maxPriceInput.value="";amenitySelect.value="";renderListings();});
 document.getElementById("showAllBtn").addEventListener("click",()=>{universityInput.value="";areaInput.value="";typeSelect.value="";document.querySelectorAll(".category-card").forEach(card=>card.classList.toggle("selected",!card.dataset.category));renderListings();});
 document.getElementById("dialogClose").addEventListener("click",()=>dialog.close());
 dialog.addEventListener("click",event=>{if(event.target===dialog)dialog.close();});
