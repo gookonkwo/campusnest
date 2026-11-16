@@ -25,4 +25,4 @@ Then open `http://localhost:5500`.
 
 ## Important
 
-The current listings are demonstration data stored in `app.js`. Search, filters, sorting, favourites and listing details work in the browser, but the frontend is not yet connected to the FastAPI database. Login, live enquiries, landlord listing management and verified badges will be connected as their backend features are built.
+The frontend now requests accommodation and university records from the FastAPI service at `http://127.0.0.1:8000`. If the API is unavailable, or the database has no accommodation records yet, the page clearly labels and displays its demonstration listings. Start the API from the `backend` directory with `uvicorn app.main:app --reload`, then serve the frontend from the repository root with `python3 -m http.server 5500 --directory frontend`. Open `http://localhost:5500`. The current accommodation API does not yet store listing photos or facility details, so database-backed cards use a temporary default photo and the facility filter is most useful with demo data. Login, landlord listing management and verified badges remain future work.
