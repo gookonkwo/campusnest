@@ -24,8 +24,26 @@ CampusNest will help students discover and compare genuine accommodation, contac
 
 ## Development approach
 
-The project will be built in small, testable stages. The first milestone is a clean backend foundation before adding authentication, accommodation listings, search, booking requests, and administration tools.
+The project will be built in small, testable stages. Each stage should be understandable, testable, and reviewed before it is merged into `main`.
 
 ## Current status
 
-Project setup is in progress. No application features have been implemented yet.
+The initial FastAPI backend foundation is available on the `feat/fastapi-foundation` branch.
+
+### Backend endpoints
+
+- `GET /` — API welcome message
+- `GET /health` — basic health check
+- `GET /docs` — interactive API documentation (provided by FastAPI)
+
+See [backend/README.md](backend/README.md) for local setup instructions.
+
+### Planned next milestones
+
+1. Add automated tests and backend quality checks.
+2. Connect PostgreSQL.
+3. Design the university, user, landlord, and accommodation data models.
+4. Add authentication and role-based permissions.
+5. Build accommodation listing and search features.
+6. Add enquiries and booking requests.
+7. Add listing moderation and reporting tools.
