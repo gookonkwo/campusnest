@@ -39,5 +39,8 @@ jobs:
       - name: Verify database migrations
         run: DATABASE_URL=sqlite:///./migration_test.db alembic upgrade head
 
+      - name: Check frontend JavaScript syntax
+        run: node --check ../frontend/app.js
+
       - name: Run tests
         run: pytest -q
