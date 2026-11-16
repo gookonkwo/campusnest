@@ -28,7 +28,7 @@ The project will be built in small, testable stages. Each stage should be unders
 
 ## Current status
 
-The initial FastAPI backend foundation is available on the `feat/fastapi-foundation` branch.
+The initial FastAPI backend and first database foundation are available on the `feat/fastapi-foundation` branch.
 
 ### Backend endpoints
 
@@ -38,12 +38,20 @@ The initial FastAPI backend foundation is available on the `feat/fastapi-foundat
 
 See [backend/README.md](backend/README.md) for local setup instructions.
 
+### Database foundation
+
+- SQLAlchemy is configured as the ORM.
+- PostgreSQL support is included through the Psycopg driver.
+- A `University` model is defined with a unique name and slug, state, institution type, and creation timestamp.
+- Local development and automated tests can use SQLite; PostgreSQL is the intended production database.
+- Database credentials are supplied through the `DATABASE_URL` environment variable. Do not commit real credentials.
+
 ### Planned next milestones
 
-1. Add automated tests and backend quality checks.
-2. Connect PostgreSQL.
-3. Design the university, user, landlord, and accommodation data models.
-4. Add authentication and role-based permissions.
-5. Build accommodation listing and search features.
-6. Add enquiries and booking requests.
-7. Add listing moderation and reporting tools.
+1. Verify the database model tests in GitHub Actions.
+2. Add database migrations with Alembic.
+3. Add university API endpoints and validation.
+4. Design user, landlord, and accommodation data models.
+5. Add authentication and role-based permissions.
+6. Build accommodation listing and search features.
+7. Add enquiries, booking requests, moderation, and reporting tools.
