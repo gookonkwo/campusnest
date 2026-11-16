@@ -28,7 +28,19 @@ The project will be built in small, testable stages. Each stage should be unders
 
 ## Current status
 
-The initial FastAPI backend and first database foundation are available on the `feat/fastapi-foundation` branch.
+The FastAPI backend, university and accommodation APIs, database migrations, and first responsive marketplace frontend are available on the `feat/fastapi-foundation` branch.
+
+### Frontend
+
+The first CampusNest marketplace interface is in `frontend/`. It includes a responsive home page, campus and area search, accommodation categories, sample listing cards, price sorting, favourites, and listing detail dialogs. The visual identity uses deep navy, teal, and warm off-white. The listings are currently demo data; live API integration, accounts, enquiries, and landlord tools are planned next.
+
+Run the frontend locally from the repository root with:
+
+```bash
+python -m http.server 5500 --directory frontend
+```
+
+Then visit `http://localhost:5500`. See [frontend/README.md](frontend/README.md) for details.
 
 ### Backend endpoints
 
@@ -48,10 +60,8 @@ See [backend/README.md](backend/README.md) for local setup instructions.
 
 ### Planned next milestones
 
-1. Verify the database model tests in GitHub Actions.
-2. Add database migrations with Alembic.
-3. Add university API endpoints and validation.
-4. Design user, landlord, and accommodation data models.
-5. Add authentication and role-based permissions.
-6. Build accommodation listing and search features.
-7. Add enquiries, booking requests, moderation, and reporting tools.
+1. Add student, landlord, and agent accounts with authentication.
+2. Connect the frontend search and listing cards to the FastAPI endpoints.
+3. Add secure landlord listing creation and management.
+4. Add enquiries, booking requests, moderation, and reporting tools.
+5. Add image uploads and verified listing workflows.
