@@ -1,0 +1,1 @@
+"""CampusNest application package."""
