@@ -13,7 +13,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-Open these addresses after the server starts:
+Open these addresses after the server starts. The frontend can call this API from `http://localhost:5500` or `http://127.0.0.1:5500` during local development.\n\nOpen these addresses:
 
 - API welcome: http://127.0.0.1:8000/
 - Health check: http://127.0.0.1:8000/health
