@@ -36,5 +36,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Verify database migrations
+        run: DATABASE_URL=sqlite:///./migration_test.db alembic upgrade head
+
       - name: Run tests
         run: pytest -q
