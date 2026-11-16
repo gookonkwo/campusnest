@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a43">
+  <meta name="description" content="Find student hostels, rooms and apartments around Nigerian universities with CampusNest.">
+  <title>CampusNest — Find Your Space. Feel at Home.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="announcement"><span class="announcement-dot"></span> Your next student home is closer than you think.</div>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="CampusNest home"><span class="brand-mark">C</span><span>campus<span class="brand-accent">nest</span><small>FIND YOUR SPACE. FEEL AT HOME.</small></span></a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a class="active" href="#explore">Explore stays</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#list-property">List a property</a>
+    </nav>
+    <div class="header-actions"><button class="text-button" id="loginBtn">Log in</button><a class="button button-dark" href="#list-property">List your space <span>↗</span></a><button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button></div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span></span> MADE FOR STUDENT LIVING</div>
+        <h1>Find a place<br>to call <em>home.</em></h1>
+        <p>Discover hostels, rooms and apartments around your campus. Compare your options and find a space that feels right.</p>
+        <div class="hero-proof"><div class="avatar-stack"><i>👩🏽</i><i>👨🏿</i><i>👩🏾</i></div><span><strong>Made for campus life</strong><br>Search smarter. Settle better.</span></div>
+      </div>
+      <div class="hero-art" aria-label="Student accommodation illustration">
+        <div class="sun-shape"></div><div class="hero-image"></div>
+        <div class="floating-note note-top"><span class="note-icon">⌂</span><span><b>Spaces near campus</b><small>Find your perfect fit</small></span></div>
+        <div class="floating-note note-bottom"><span class="verified-icon">✓</span><span><b>Find with confidence</b><small>Compare before you decide</small></span></div>
+        <div class="hero-caption">A better place to begin your next chapter.</div>
+      </div>
+      <div class="hero-search" id="explore">
+        <div class="search-field university-field"><label for="universitySearch">UNIVERSITY OR CAMPUS</label><div class="input-wrap"><span>⌖</span><input id="universitySearch" type="search" placeholder="e.g. University of Lagos"></div></div>
+        <div class="search-field"><label for="areaSearch">LOCATION / AREA</label><div class="input-wrap"><span>⌾</span><input id="areaSearch" type="search" placeholder="e.g. Akoka, Yaba"></div></div>
+        <div class="search-field type-field"><label for="typeFilter">PROPERTY TYPE</label><div class="input-wrap"><span>⌂</span><select id="typeFilter"><option value="">Any accommodation</option><option>Hostel</option><option>Self-contained</option><option>Shared apartment</option><option>Single room</option></select></div></div>
+        <button class="search-button" id="searchBtn"><span>⌕</span> Search spaces</button>
+      </div>
+    </section>
+
+    <section class="trust-strip">
+      <div><span class="trust-symbol">◎</span><span><b>Campus-focused</b><small>Find spaces around your school</small></span></div>
+      <div><span class="trust-symbol">◇</span><span><b>Compare your options</b><small>Details, prices and facilities</small></span></div>
+      <div><span class="trust-symbol">✓</span><span><b>Choose with confidence</b><small>Make informed decisions</small></span></div>
+    </section>
+
+    <section class="content-section categories-section">
+      <div class="section-heading"><div><div class="eyebrow">BROWSE YOUR WAY</div><h2>What kind of space<br>are you looking for?</h2></div><p>From a shared space with friends to a place of your own, start with what feels right.</p></div>
+      <div class="category-grid">
+        <button class="category-card selected" data-category=""><span class="category-icon">⌂</span><b>All spaces</b><small>Explore everything</small><span class="category-arrow">↗</span></button>
+        <button class="category-card" data-category="Hostel"><span class="category-icon">▦</span><b>Hostels</b><small>School & private hostels</small><span class="category-arrow">↗</span></button>
+        <button class="category-card" data-category="Self-contained"><span class="category-icon">⌂</span><b>Self-contained</b><small>Your own private space</small><span class="category-arrow">↗</span></button>
+        <button class="category-card" data-category="Shared apartment"><span class="category-icon">⌑</span><b>Shared apartments</b><small>Good spaces, shared costs</small><span class="category-arrow">↗</span></button>
+        <button class="category-card" data-category="Single room"><span class="category-icon">▤</span><b>Single rooms</b><small>Simple and comfortable</small><span class="category-arrow">↗</span></button>
+      </div>
+    </section>
+
+    <section class="listings-section" id="listings">
+      <div class="listings-top"><div><div class="eyebrow">HANDPICK YOUR NEXT SPACE</div><h2>Spaces students are exploring</h2><p class="section-subtitle">Browse places around popular student communities.</p></div><div class="listing-controls"><label class="sr-only" for="sortSelect">Sort listings</label><select id="sortSelect"><option value="recommended">Recommended</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select></div></div>
+      <div class="active-filters" id="activeFilters"></div>
+      <div class="listing-grid" id="listingGrid" aria-live="polite"></div>
+      <div class="empty-state" id="emptyState" hidden><div>⌕</div><h3>No spaces found</h3><p>Try changing your search or removing a filter.</p><button class="button button-outline" id="clearFilters">Clear filters</button></div>
+      <div class="browse-more"><button class="button button-outline" id="showAllBtn">Explore all spaces <span>→</span></button></div>
+    </section>
+
+    <section class="how-section" id="how-it-works"><div class="how-copy"><div class="eyebrow">A SIMPLER WAY TO SETTLE IN</div><h2>Your next space,<br>in three simple steps.</h2><p>Finding accommodation shouldn't feel like another assignment. CampusNest makes it easier to discover, compare and connect.</p><a class="button button-light" href="#explore">Start exploring <span>→</span></a></div><div class="steps"><article><span>01</span><div><h3>Search your campus</h3><p>Choose your university, preferred area and the kind of accommodation you need.</p></div></article><article><span>02</span><div><h3>Compare your favourites</h3><p>See prices, photos, facilities and details before making a decision.</p></div></article><article><span>03</span><div><h3>Connect and move in</h3><p>Reach out to the landlord or agent and take the next step towards your new space.</p></div></article></div></section>
+
+    <section class="landlord-banner" id="list-property"><div><div class="eyebrow">HAVE A SPACE TO SHARE?</div><h2>Good spaces deserve<br>the right students.</h2><p>Reach students searching around your campus. Create a listing and help someone find their next home.</p><a class="button button-dark" href="mailto:hello@campusnest.ng?subject=List%20a%20property">List your property <span>↗</span></a></div><div class="landlord-illustration"><div class="plant">✳</div><div class="building"><div class="building-roof"></div><div class="building-body"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="building-door"></div></div><div class="building-shadow"></div></div></section>
+  </main>
+
+  <footer class="site-footer"><a class="brand footer-brand" href="#"><span class="brand-mark">C</span><span>campus<span class="brand-accent">nest</span><small>FIND YOUR SPACE. FEEL AT HOME.</small></span></a><p>Making student living a little easier, one space at a time.</p><div class="footer-bottom"><span>© 2026 CampusNest. Built for student living in Nigeria.</span><div><a href="#how-it-works">How it works</a><a href="mailto:hello@campusnest.ng">Contact</a></div></div></footer>
+
+  <dialog class="listing-dialog" id="listingDialog"><button class="dialog-close" id="dialogClose" aria-label="Close details">×</button><div id="dialogContent"></div></dialog>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
