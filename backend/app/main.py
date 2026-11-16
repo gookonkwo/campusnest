@@ -1,10 +1,14 @@
 from fastapi import FastAPI
 
+from app.routers import universities
+
 app = FastAPI(
     title="CampusNest API",
     description="API for discovering and managing student accommodation.",
     version="0.1.0",
 )
+
+app.include_router(universities.router)
 
 
 @app.get("/", tags=["General"])
