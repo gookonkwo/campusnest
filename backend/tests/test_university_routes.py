@@ -35,12 +35,6 @@ def client():
     engine.dispose()
 
 
-def add_universities():
-    # The fixture database is isolated for each test.
-    from app.database import SessionLocal
-
-    return SessionLocal
-
 
 def test_list_universities_returns_empty_list(client):
     response = client.get("/universities")
