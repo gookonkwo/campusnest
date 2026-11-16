@@ -20,12 +20,14 @@ Open these addresses after the server starts:
 - Interactive API documentation: http://127.0.0.1:8000/docs
 - List universities: http://127.0.0.1:8000/universities
 - Get a university by ID: http://127.0.0.1:8000/universities/1
+- List accommodation options: http://127.0.0.1:8000/accommodations
+- Get an accommodation listing by ID: http://127.0.0.1:8000/accommodations/1
 
 The university list accepts optional `state`, `institution_type`, `skip`, and `limit` query parameters. For example: `/universities?state=Lagos&institution_type=federal&limit=10`.
 
 ## Current scope
 
-The API currently includes welcome and health checks plus read-only university endpoints. The university list supports optional state and institution-type filters, with pagination. University records are managed directly in the database for now; public creation is intentionally not exposed until admin authentication is available. Authentication, accommodation listings, search, and booking requests will be added in later milestones.
+The API includes welcome and health checks, read-only university endpoints, and read-only accommodation listing endpoints. Accommodation results can be filtered by university, accommodation type, area, price range, and availability, with pagination. Listings must belong to a registered university and must have a positive price. Public listing creation is intentionally not exposed until landlord accounts and authentication are available. Authentication, listing management, images, and booking requests will be added in later milestones.
 
 ## Database setup
 
@@ -47,7 +49,7 @@ From the `backend` directory, activate your virtual environment and run:
 alembic upgrade head
 ```
 
-This creates the database tables defined by the migrations. The first migration creates the `universities` table.
+This creates the database tables defined by the migrations. The first migration creates the `universities` table. The second creates the `accommodations` table and links each listing to a university.
 
 To create a new migration after changing models:
 
