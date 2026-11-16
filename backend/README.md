@@ -18,10 +18,14 @@ Open these addresses after the server starts:
 - API welcome: http://127.0.0.1:8000/
 - Health check: http://127.0.0.1:8000/health
 - Interactive API documentation: http://127.0.0.1:8000/docs
+- List universities: http://127.0.0.1:8000/universities
+- Get a university by ID: http://127.0.0.1:8000/universities/1
+
+The university list accepts optional `state`, `institution_type`, `skip`, and `limit` query parameters. For example: `/universities?state=Lagos&institution_type=federal&limit=10`.
 
 ## Current scope
 
-This is the initial API foundation. Authentication, database integration, accommodation listings, search, and booking requests will be added in later milestones.
+The API currently includes welcome and health checks plus read-only university endpoints. The university list supports optional state and institution-type filters, with pagination. University records are managed directly in the database for now; public creation is intentionally not exposed until admin authentication is available. Authentication, accommodation listings, search, and booking requests will be added in later milestones.
 
 ## Database setup
 
