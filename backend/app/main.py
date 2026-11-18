@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import accommodations, universities
+from app.routers import accommodations, auth, universities
 
 app = FastAPI(
     title="CampusNest API",
     description="API for discovering and managing student accommodation.",
-    version="0.1.0",
+    version="0.2.0",
 )
 
 app.add_middleware(
@@ -16,12 +16,13 @@ app.add_middleware(
         "http://127.0.0.1:5500",
     ],
     allow_credentials=True,
-    allow_methods=["GET", "OPTIONS"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
 app.include_router(universities.router)
 app.include_router(accommodations.router)
+app.include_router(auth.router)
 
 
 @app.get("/", tags=["General"])
