@@ -17,31 +17,24 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "accommodations",
-        sa.Column("owner_id", sa.Integer(), nullable=True),
-    )
-    op.create_index(
-        "ix_accommodations_owner_id",
-        "accommodations",
-        ["owner_id"],
-        unique=False,
-    )
-    op.create_foreign_key(
-        "fk_accommodations_owner_id_users",
-        "accommodations",
-        "users",
-        ["owner_id"],
-        ["id"],
-        ondelete="SET NULL",
-    )
+    # Batch mode supports SQLite as well as PostgreSQL.
+    with op.batch_alter_table("accommodations") as batch_op:
+        batch_op.add_column(sa.Column("owner_id", sa.Integer(), nullable=True))
+        batch_op.create_foreign_key(
+            "fk_accommodations_owner_id_users",
+            "users",
+            ["owner_id"],
+            ["id"],
+            ondelete="SET NULL",
+        )
+        batch_op.create_index("ix_accommodations_owner_id", ["owner_id"])
 
 
 def downgrade() -> None:
-    op.drop_constraint(
-        "fk_accommodations_owner_id_users",
-        "accommodations",
-        type_="foreignkey",
-    )
-    op.drop_index("ix_accommodations_owner_id", table_name="accommodations")
-    op.drop_column("accommodations", "owner_id")
+    with op.batch_alter_table("accommodations") as batch_op:
+        batch_op.drop_index("ix_accommodations_owner_id")
+        batch_op.drop_constraint(
+            "fk_accommodations_owner_id_users",
+            type_="foreignkey",
+        )
+        batch_op.drop_column("owner_id")
