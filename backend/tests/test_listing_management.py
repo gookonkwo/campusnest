@@ -169,3 +169,17 @@ def test_listing_update_rejects_empty_changes(client):
         headers=headers,
     )
     assert response.status_code == 422
+
+
+
+def test_listing_update_rejects_null_required_field(client):
+    headers = register(client, "null@example.com", "landlord")
+    created = client.post("/accommodations/", json=listing_payload(), headers=headers)
+
+    response = client.patch(
+        f"/accommodations/{created.json()['id']}",
+        json={"title": None},
+        headers=headers,
+    )
+
+    assert response.status_code == 422
