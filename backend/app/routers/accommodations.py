@@ -1,15 +1,44 @@
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.auth import get_current_user
 from app.database import get_db
-from app.models import Accommodation
-from app.schemas.accommodation import AccommodationResponse
+from app.models import Accommodation, University, User
+from app.schemas.accommodation import (
+    AccommodationCreate,
+    AccommodationResponse,
+    AccommodationUpdate,
+)
 
 
 router = APIRouter(prefix="/accommodations", tags=["Accommodations"])
+
+
+def require_listing_manager(current_user: User) -> None:
+    if current_user.role not in {"landlord", "agent"}:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only landlords and agents can manage accommodation listings",
+        )
+
+
+def get_owned_listing(
+    accommodation_id: int,
+    current_user: User,
+    db: Session,
+) -> Accommodation:
+    listing = db.get(Accommodation, accommodation_id)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Accommodation not found")
+    if listing.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only manage your own listings",
+        )
+    return listing
 
 
 @router.get("/", response_model=list[AccommodationResponse])
@@ -61,6 +90,48 @@ def list_accommodations(
     return list(db.scalars(statement).all())
 
 
+@router.get("/mine", response_model=list[AccommodationResponse])
+def list_my_accommodations(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> list[Accommodation]:
+    """List the authenticated landlord or agent's own properties."""
+    require_listing_manager(current_user)
+    statement = (
+        select(Accommodation)
+        .where(Accommodation.owner_id == current_user.id)
+        .order_by(Accommodation.created_at.desc(), Accommodation.id.desc())
+    )
+    return list(db.scalars(statement).all())
+
+
+@router.post(
+    "/",
+    response_model=AccommodationResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_accommodation(
+    listing_data: AccommodationCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> Accommodation:
+    """Create a listing owned by the authenticated landlord or agent."""
+    require_listing_manager(current_user)
+
+    university = db.get(University, listing_data.university_id)
+    if university is None:
+        raise HTTPException(status_code=404, detail="University not found")
+
+    listing = Accommodation(
+        **listing_data.model_dump(),
+        owner_id=current_user.id,
+    )
+    db.add(listing)
+    db.commit()
+    db.refresh(listing)
+    return listing
+
+
 @router.get("/{accommodation_id}", response_model=AccommodationResponse)
 def get_accommodation(
     accommodation_id: int,
@@ -73,3 +144,39 @@ def get_accommodation(
         raise HTTPException(status_code=404, detail="Accommodation not found")
 
     return accommodation
+
+
+@router.put("/{accommodation_id}", response_model=AccommodationResponse)
+def update_accommodation(
+    accommodation_id: int,
+    listing_data: AccommodationUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> Accommodation:
+    """Update a listing only when it belongs to the authenticated owner."""
+    require_listing_manager(current_user)
+    listing = get_owned_listing(accommodation_id, current_user, db)
+
+    university = db.get(University, listing_data.university_id)
+    if university is None:
+        raise HTTPException(status_code=404, detail="University not found")
+
+    for field, value in listing_data.model_dump().items():
+        setattr(listing, field, value)
+
+    db.commit()
+    db.refresh(listing)
+    return listing
+
+
+@router.delete("/{accommodation_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_accommodation(
+    accommodation_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    """Delete a listing only when it belongs to the authenticated owner."""
+    require_listing_manager(current_user)
+    listing = get_owned_listing(accommodation_id, current_user, db)
+    db.delete(listing)
+    db.commit()
