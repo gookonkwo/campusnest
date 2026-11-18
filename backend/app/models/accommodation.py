@@ -34,6 +34,11 @@ class Accommodation(Base):
         ForeignKey("universities.id", ondelete="RESTRICT"),
         index=True,
     )
+    owner_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
     is_available: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
