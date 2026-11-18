@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -15,15 +16,11 @@ def client():
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
-    TestingSessionLocal = sessionmaker(
-        bind=engine,
-        autoflush=False,
-        autocommit=False,
-    )
+    testing_session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
     Base.metadata.create_all(bind=engine)
 
     def override_get_db():
-        db = TestingSessionLocal()
+        db = testing_session()
         try:
             yield db
         finally:
@@ -52,8 +49,6 @@ def register(client: TestClient, email: str, role: str) -> str:
 
 
 def add_university(client: TestClient) -> None:
-    from app.database import get_db
-
     db_generator = app.dependency_overrides[get_db]()
     db = next(db_generator)
     db.add(
@@ -86,16 +81,12 @@ def test_landlord_can_create_and_view_own_listing(client):
     token = register(client, "landlord@example.com", "landlord")
     headers = {"Authorization": f"Bearer {token}"}
 
-    created = client.post(
-        "/accommodations/",
-        json=listing_payload(),
-        headers=headers,
-    )
+    created = client.post("/accommodations/", json=listing_payload(), headers=headers)
 
     assert created.status_code == 201
     data = created.json()
     assert data["title"] == "Comfortable student hostel"
-    assert data["owner_id"] == data["owner_id"]
+    assert isinstance(data["owner_id"], int)
 
     mine = client.get("/accommodations/mine", headers=headers)
     assert mine.status_code == 200
@@ -106,13 +97,11 @@ def test_landlord_can_create_and_view_own_listing(client):
 def test_agent_can_create_listing(client):
     add_university(client)
     token = register(client, "agent@example.com", "agent")
-
     response = client.post(
         "/accommodations/",
         json=listing_payload(),
         headers={"Authorization": f"Bearer {token}"},
     )
-
     assert response.status_code == 201
 
 
@@ -121,11 +110,7 @@ def test_student_cannot_create_or_manage_listings(client):
     token = register(client, "student@example.com", "student")
     headers = {"Authorization": f"Bearer {token}"}
 
-    create_response = client.post(
-        "/accommodations/",
-        json=listing_payload(),
-        headers=headers,
-    )
+    create_response = client.post("/accommodations/", json=listing_payload(), headers=headers)
     mine_response = client.get("/accommodations/mine", headers=headers)
 
     assert create_response.status_code == 403
@@ -136,18 +121,12 @@ def test_landlord_can_update_own_listing(client):
     add_university(client)
     token = register(client, "owner@example.com", "landlord")
     headers = {"Authorization": f"Bearer {token}"}
-
-    created = client.post(
-        "/accommodations/",
-        json=listing_payload(),
-        headers=headers,
-    )
+    created = client.post("/accommodations/", json=listing_payload(), headers=headers)
     listing_id = created.json()["id"]
 
     updated_payload = listing_payload()
     updated_payload["title"] = "Updated student accommodation"
     updated_payload["is_available"] = False
-
     updated = client.put(
         f"/accommodations/{listing_id}",
         json=updated_payload,
@@ -163,20 +142,17 @@ def test_landlord_cannot_change_another_users_listing(client):
     add_university(client)
     first_token = register(client, "first@example.com", "landlord")
     second_token = register(client, "second@example.com", "landlord")
-
     created = client.post(
         "/accommodations/",
         json=listing_payload(),
         headers={"Authorization": f"Bearer {first_token}"},
     )
-    listing_id = created.json()["id"]
 
     response = client.put(
-        f"/accommodations/{listing_id}",
+        f"/accommodations/{created.json()['id']}",
         json=listing_payload(),
         headers={"Authorization": f"Bearer {second_token}"},
     )
-
     assert response.status_code == 404
 
 
@@ -184,40 +160,25 @@ def test_landlord_can_delete_own_listing(client):
     add_university(client)
     token = register(client, "delete@example.com", "landlord")
     headers = {"Authorization": f"Bearer {token}"}
-
-    created = client.post(
-        "/accommodations/",
-        json=listing_payload(),
-        headers=headers,
-    )
+    created = client.post("/accommodations/", json=listing_payload(), headers=headers)
     listing_id = created.json()["id"]
 
-    deleted = client.delete(
-        f"/accommodations/{listing_id}",
-        headers=headers,
-    )
+    deleted = client.delete(f"/accommodations/{listing_id}", headers=headers)
     assert deleted.status_code == 204
     assert client.get(f"/accommodations/{listing_id}").status_code == 404
 
 
 def test_listing_creation_rejects_unknown_university(client):
     token = register(client, "unknown-university@example.com", "landlord")
-
     response = client.post(
         "/accommodations/",
         json=listing_payload(),
         headers={"Authorization": f"Bearer {token}"},
     )
-
     assert response.status_code == 404
 
 
 def test_listing_creation_requires_authentication(client):
     add_university(client)
-
-    response = client.post(
-        "/accommodations/",
-        json=listing_payload(),
-    )
-
+    response = client.post("/accommodations/", json=listing_payload())
     assert response.status_code == 401
