@@ -1,7 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class AccommodationCreate(BaseModel):
@@ -26,6 +27,13 @@ class AccommodationUpdate(BaseModel):
     address: str | None = Field(default=None, min_length=5, max_length=255)
     university_id: int | None = Field(default=None, gt=0)
     is_available: bool | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def reject_null_values(cls, value: Any) -> Any:
+        if isinstance(value, dict) and any(item is None for item in value.values()):
+            raise ValueError("Listing fields cannot be null")
+        return value
 
 
 class AccommodationResponse(BaseModel):
